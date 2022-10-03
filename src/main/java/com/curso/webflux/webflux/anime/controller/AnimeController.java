@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/anime")
@@ -20,7 +22,16 @@ public class AnimeController {
 
     @GetMapping()
     public Flux<Anime> listAll() {
-        return animeService.findAll();
+        return animeService.findAll()
+                .log()
+                .doOnSubscribe(subscription ->  log.info(subscription.toString()))
+                .doOnComplete(() -> getTest().subscribe());
+    }
+
+    private Mono<String> getTest() {
+        return Mono.just("teste Marcos")
+                .delayElement(Duration.ofMillis(4000))
+                .doOnNext(s -> System.out.println("passou aqui: "+s));
     }
 
 
@@ -30,8 +41,10 @@ public class AnimeController {
     }
 
     @PostMapping
-    public Mono<Anime> save(@RequestBody Anime anime){
-        return animeService.save(anime);
+    public Mono<Anime> save(@RequestBody Mono<Anime> anime){
+        return anime.doOnNext(anime1 -> System.out.println(anime1))
+                .flatMap(animeService::save);
+                //.doOnError(//captura em todos doONError da pipe);
     }
 
     @PutMapping(path = "{id}")

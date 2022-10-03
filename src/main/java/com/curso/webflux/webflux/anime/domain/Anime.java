@@ -14,6 +14,6 @@ public class Anime {
 
     @Id
     private Integer id;
-
+    
     private String anime;
 }
