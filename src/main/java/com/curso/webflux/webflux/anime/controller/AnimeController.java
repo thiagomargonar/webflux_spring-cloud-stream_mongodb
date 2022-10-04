@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -42,9 +43,7 @@ public class AnimeController {
 
     @PostMapping
     public Mono<Anime> save(@RequestBody Mono<Anime> anime){
-        return anime.doOnNext(anime1 -> System.out.println(anime1))
-                .flatMap(animeService::save);
-                //.doOnError(//captura em todos doONError da pipe);
+        return anime.flatMap(animeService::save);
     }
 
     @PutMapping(path = "{id}")
