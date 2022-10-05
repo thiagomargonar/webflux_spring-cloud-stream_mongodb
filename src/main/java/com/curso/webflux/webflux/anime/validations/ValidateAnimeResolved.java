@@ -20,9 +20,13 @@ public class ValidateAnimeResolved {
     }
 
     public Mono validationsAnime(Anime anime){
-        if(validateAnimeInterfaces.stream().anyMatch(validateAnimeInterface -> validateAnimeInterface.validate(anime,false))){
+        if(containsErros(anime)){
             return Mono.error(new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, AnimeExceptions.ANIME_INVALIDO.getTexto()));
         }
         return Mono.just(anime);
+    }
+
+    private boolean containsErros(Anime anime) {
+        return validateAnimeInterfaces.stream().anyMatch(validateAnimeInterface -> validateAnimeInterface.validate(anime));
     }
 }
