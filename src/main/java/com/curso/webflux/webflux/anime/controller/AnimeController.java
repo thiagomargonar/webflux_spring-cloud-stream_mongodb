@@ -37,8 +37,18 @@ public class AnimeController {
 
 
     @GetMapping(path = "{id}")
-    public Mono<PrimeirosFuncionarios> listById(@PathVariable int id) {
+    public Mono<PrimeirosFuncionarios> listById(@PathVariable BigInteger id) {
         return animeService.findById(id);
+    }
+
+    @GetMapping(path = "/nome/{nome}")
+    public Mono<PrimeirosFuncionarios> findByName(@PathVariable String nome) {
+        return animeService.findByName(nome);
+    }
+
+    @GetMapping(path = "/salariodfnull/{valor}/{nome}")
+    public Flux<PrimeirosFuncionarios> findSemSalario(@PathVariable double valor, @PathVariable String nome) {
+        return animeService.findNoSalario(valor,nome);
     }
 
     @PostMapping
@@ -48,7 +58,7 @@ public class AnimeController {
 
     @PutMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> update(@PathVariable int id,@RequestBody PrimeirosFuncionarios anime){
+    public Mono<Void> update(@PathVariable BigInteger id,@RequestBody PrimeirosFuncionarios anime){
         return animeService.update(id, anime);
     }
 

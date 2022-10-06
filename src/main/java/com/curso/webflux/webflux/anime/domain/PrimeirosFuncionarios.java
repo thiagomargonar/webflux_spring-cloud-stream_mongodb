@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 @Data
@@ -11,7 +12,7 @@ import java.math.BigInteger;
 @NoArgsConstructor
 @Builder
 @With
-@Document("MongoDB_Funcionario2")
+@Document("funcionario")
 public class PrimeirosFuncionarios {
 
     @Id
@@ -20,4 +21,6 @@ public class PrimeirosFuncionarios {
     private String Primeiro_Nome;
 
     private String Sexo;
+
+    private Double salario;
 }
