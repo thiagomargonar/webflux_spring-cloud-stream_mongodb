@@ -1,12 +1,10 @@
-package com.curso.webflux.webflux.anime.repository;
+package com.curso.webflux.webflux.funcionario.repository;
 
-import com.curso.webflux.webflux.anime.domain.Funcionario;
+import com.curso.webflux.webflux.funcionario.domain.Funcionario;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.math.BigInteger;
 
 public interface AnimeRepository extends ReactiveMongoRepository<Funcionario, String> {
     @Query(value = "{'Primeiro_Nome': ?0}")

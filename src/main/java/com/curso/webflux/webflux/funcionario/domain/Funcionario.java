@@ -1,11 +1,8 @@
-package com.curso.webflux.webflux.anime.domain;
+package com.curso.webflux.webflux.funcionario.domain;
 
-import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import java.math.BigInteger;
 
 @Document("funcionario")
 public class Funcionario {

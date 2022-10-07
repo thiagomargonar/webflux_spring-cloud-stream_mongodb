@@ -1,6 +1,6 @@
-package com.curso.webflux.webflux.anime.validations;
+package com.curso.webflux.webflux.funcionario.validations;
 
-import com.curso.webflux.webflux.anime.domain.Funcionario;
+import com.curso.webflux.webflux.funcionario.domain.Funcionario;
 
 public class ValidateFuncionarioName implements ValidateAnimeInterface {
 

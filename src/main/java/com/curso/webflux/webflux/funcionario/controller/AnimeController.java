@@ -1,8 +1,8 @@
-package com.curso.webflux.webflux.anime.controller;
+package com.curso.webflux.webflux.funcionario.controller;
 
 
-import com.curso.webflux.webflux.anime.domain.Funcionario;
-import com.curso.webflux.webflux.anime.service.AnimeService;
+import com.curso.webflux.webflux.funcionario.domain.Funcionario;
+import com.curso.webflux.webflux.funcionario.service.AnimeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

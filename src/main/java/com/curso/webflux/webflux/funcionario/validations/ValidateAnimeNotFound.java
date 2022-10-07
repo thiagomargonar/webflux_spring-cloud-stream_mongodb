@@ -1,6 +1,6 @@
-package com.curso.webflux.webflux.anime.validations;
+package com.curso.webflux.webflux.funcionario.validations;
 
-import com.curso.webflux.webflux.anime.exceptions.AnimeExceptions;
+import com.curso.webflux.webflux.funcionario.exceptions.AnimeExceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 

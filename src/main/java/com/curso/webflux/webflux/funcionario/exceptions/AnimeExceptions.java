@@ -1,4 +1,4 @@
-package com.curso.webflux.webflux.anime.exceptions;
+package com.curso.webflux.webflux.funcionario.exceptions;
 
 public enum AnimeExceptions {
     ANIME_NAO_ECONTRADO("Anime not found"),

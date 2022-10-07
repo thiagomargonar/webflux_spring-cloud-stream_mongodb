@@ -1,10 +1,10 @@
-package com.curso.webflux.webflux.anime.service;
+package com.curso.webflux.webflux.funcionario.service;
 
 
-import com.curso.webflux.webflux.anime.domain.Funcionario;
-import com.curso.webflux.webflux.anime.repository.AnimeRepository;
-import com.curso.webflux.webflux.anime.validations.ValidateAnimeNotFound;
-import com.curso.webflux.webflux.anime.validations.ValidateFuncionarioResolved;
+import com.curso.webflux.webflux.funcionario.domain.Funcionario;
+import com.curso.webflux.webflux.funcionario.repository.AnimeRepository;
+import com.curso.webflux.webflux.funcionario.validations.ValidateAnimeNotFound;
+import com.curso.webflux.webflux.funcionario.validations.ValidateFuncionarioResolved;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -43,10 +43,12 @@ public class AnimeService {
     public Mono<Void> update(BigInteger id, Funcionario funcionario) {
 
         Query query = new Query(Criteria.where("_id").is(id));
-        Update update = new Update().set("",funcionario)
-                .set("Sexo","F");
+        Update update = new Update()
+                .set("Primeiro_Nome",funcionario.getPrimeiroNome())
+                .set("Sexo",funcionario.getSexo())
+                .set("salario",funcionario.getSalario());
 
-        return reactiveMongoTemplate.findAndModify(query,update, Funcionario.class).then();
+        return reactiveMongoTemplate.findAndModify(query,update,Funcionario.class).then();
 
 //        return findById(id)
 //                .flatMap(anime1 -> animeRepository.save(funcionario))
