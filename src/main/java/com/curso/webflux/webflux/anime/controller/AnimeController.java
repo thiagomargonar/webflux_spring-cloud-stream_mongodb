@@ -1,7 +1,7 @@
 package com.curso.webflux.webflux.anime.controller;
 
 
-import com.curso.webflux.webflux.anime.domain.PrimeirosFuncionarios;
+import com.curso.webflux.webflux.anime.domain.Funcionario;
 import com.curso.webflux.webflux.anime.service.AnimeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class AnimeController {
     private final AnimeService animeService;
 
     @GetMapping()
-    public Flux<PrimeirosFuncionarios> listAll() {
+    public Flux<Funcionario> listAll() {
         return animeService.findAll()
                 .log()
                 .doOnSubscribe(subscription ->  log.info(subscription.toString()))
@@ -37,34 +37,34 @@ public class AnimeController {
 
 
     @GetMapping(path = "{id}")
-    public Mono<PrimeirosFuncionarios> listById(@PathVariable BigInteger id) {
+    public Mono<Funcionario> listById(@PathVariable String id) {
         return animeService.findById(id);
     }
 
     @GetMapping(path = "/nome/{nome}")
-    public Mono<PrimeirosFuncionarios> findByName(@PathVariable String nome) {
+    public Mono<Funcionario> findByName(@PathVariable String nome) {
         return animeService.findByName(nome);
     }
 
     @GetMapping(path = "/salariodfnull/{valor}/{nome}")
-    public Flux<PrimeirosFuncionarios> findSemSalario(@PathVariable double valor, @PathVariable String nome) {
+    public Flux<Funcionario> findSemSalario(@PathVariable double valor, @PathVariable String nome) {
         return animeService.findNoSalario(valor,nome);
     }
 
     @PostMapping
-    public Mono<PrimeirosFuncionarios> save(@RequestBody Mono<PrimeirosFuncionarios> anime){
+    public Mono<Funcionario> save(@RequestBody Mono<Funcionario> anime){
         return anime.flatMap(animeService::save);
     }
 
     @PutMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> update(@PathVariable BigInteger id,@RequestBody PrimeirosFuncionarios anime){
+    public Mono<Void> update(@PathVariable BigInteger id,@RequestBody Funcionario anime){
         return animeService.update(id, anime);
     }
 
     @DeleteMapping(path = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> delete(@PathVariable BigInteger id){
+    public Mono<Void> delete(@PathVariable String id){
         return animeService.delete(id);
     }
 }

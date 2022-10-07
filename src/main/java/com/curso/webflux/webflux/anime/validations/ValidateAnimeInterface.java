@@ -1,7 +1,7 @@
 package com.curso.webflux.webflux.anime.validations;
 
-import com.curso.webflux.webflux.anime.domain.PrimeirosFuncionarios;
+import com.curso.webflux.webflux.anime.domain.Funcionario;
 
 public interface ValidateAnimeInterface {
-    public boolean validate(PrimeirosFuncionarios anime);
+    public boolean validate(Funcionario funcionario);
 }

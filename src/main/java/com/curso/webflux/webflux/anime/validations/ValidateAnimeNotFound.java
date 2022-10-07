@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 public class ValidateAnimeNotFound {
-    public static ResponseStatusException getAnime_not_found() {
+    public static ResponseStatusException getFuncionarioNotFound() {
         return new ResponseStatusException(HttpStatus.NOT_FOUND, AnimeExceptions.ANIME_NAO_ECONTRADO.getTexto());
     }
 }
