@@ -1,12 +1,13 @@
 package com.curso.webflux.webflux.aluno.service;
 
 import com.curso.webflux.webflux.aluno.domain.Aluno;
-import com.curso.webflux.webflux.aluno.domain.Notas;
 import com.curso.webflux.webflux.aluno.repository.AlunoRepository;
 import org.bson.Document;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.aggregation.UnwindOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -18,7 +19,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 
 @Service
 public class AlunoService {
@@ -71,7 +72,7 @@ public class AlunoService {
     public Mono<List<Document>> getTheBestAluno2() {
 
         UnwindOperation notaValue = Aggregation.unwind("nota");
-        GroupOperation groupOperation1 = group("nome","habilidades")
+        GroupOperation groupOperation1 = group("nome", "habilidades")
                 .avg("nota.value").as("media")
                 .count().as("notasLancadas")
                 .sum("nota.value").as("totalNotas");
@@ -80,7 +81,7 @@ public class AlunoService {
                 notaValue,
                 groupOperation1);
 
-        return reactiveMongoTemplate.aggregate(aggregation,"aluno",Document.class).collectList();
+        return reactiveMongoTemplate.aggregate(aggregation, "aluno", Document.class).collectList();
     }
 
 
