@@ -5,9 +5,7 @@ import com.curso.webflux.webflux.aluno.repository.AlunoRepository;
 import org.bson.Document;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.GroupOperation;
-import org.springframework.data.mongodb.core.aggregation.UnwindOperation;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -16,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.replaceRoot;
 
 @Service
 public class AlunoService {
@@ -82,6 +80,28 @@ public class AlunoService {
                 groupOperation1);
 
         return reactiveMongoTemplate.aggregate(aggregation, "aluno", Document.class).collectList();
+    }
+
+    public Mono<List<Document>> lookupOperation(){
+
+
+        LookupOperation lookupOperation = LookupOperation.newLookup()
+                .from("aluno")
+                .localField("item")
+                .foreignField("curso.nome")
+                .as("alunosMatriculados");
+
+        ProjectionOperation operation = new ProjectionOperation()
+                .andExclude("_id");
+
+        GroupOperation groupOperation = group("item","price","alunosMatriculados");
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                lookupOperation,
+                operation,
+                groupOperation);
+
+        return reactiveMongoTemplate.aggregate(aggregation, "modulos", Document.class).collectList();
     }
 
 

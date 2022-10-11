@@ -49,6 +49,11 @@ public class AlunoController {
         return alunoService.getTheBestAluno2();
     }
 
+    @GetMapping(path = "/lookup")
+    public Mono<List<Document>> getlookup() {
+        return alunoService.lookupOperation();
+    }
+
     @PutMapping(path = "/{id}")
     public void update(@PathVariable String id, @RequestBody String curso) {
         alunoService.updateAluno(id, curso);
