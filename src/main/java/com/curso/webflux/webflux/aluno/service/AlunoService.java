@@ -53,6 +53,9 @@ public class AlunoService {
                         teste.put("nome",aluno1.getNome());
                         streamBridge.send("producer_thiago", teste);
                     }
+                })
+                .doOnError(throwable -> {
+                    System.out.println("poderia enviar uma mensagem para outro topic passando throwable.printStackTrace() personalizado");
                 });
     }
 
