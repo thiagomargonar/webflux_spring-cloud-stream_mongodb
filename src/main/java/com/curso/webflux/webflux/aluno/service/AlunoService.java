@@ -3,30 +3,40 @@ package com.curso.webflux.webflux.aluno.service;
 import com.curso.webflux.webflux.aluno.domain.Aluno;
 import com.curso.webflux.webflux.aluno.repository.AlunoRepository;
 import org.bson.Document;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.replaceRoot;
 
 @Service
 public class AlunoService {
     private final AlunoRepository alunoRepository;
     private final ReactiveMongoTemplate reactiveMongoTemplate;
+    private final StreamBridge streamBridge;
 
-    public AlunoService(AlunoRepository alunoRepository, ReactiveMongoTemplate reactiveMongoTemplate) {
+    public AlunoService(AlunoRepository alunoRepository, ReactiveMongoTemplate reactiveMongoTemplate,
+                        StreamBridge streamBridge) {
         this.alunoRepository = alunoRepository;
         this.reactiveMongoTemplate = reactiveMongoTemplate;
+        this.streamBridge = streamBridge;
     }
 
 
@@ -35,8 +45,17 @@ public class AlunoService {
     }
 
     public Flux<Aluno> findALl() {
-        return alunoRepository.findAll();
+        var aluno = alunoRepository.findAll();
+        return aluno
+                .doOnNext(aluno1 -> {
+                    if(aluno1.getNome().equals("margonar")){
+                        Map<String,String> teste = new HashMap<>();
+                        teste.put("nome",aluno1.getNome());
+                        streamBridge.send("producer_thiago", teste);
+                    }
+                });
     }
+
 
     @Transactional
     public void updateAluno(String id, String curso) {
@@ -82,7 +101,7 @@ public class AlunoService {
         return reactiveMongoTemplate.aggregate(aggregation, "aluno", Document.class).collectList();
     }
 
-    public Mono<List<Document>> lookupOperation(){
+    public Mono<List<Document>> lookupOperation() {
 
 
         LookupOperation lookupOperation = LookupOperation.newLookup()
@@ -94,7 +113,7 @@ public class AlunoService {
         ProjectionOperation operation = new ProjectionOperation()
                 .andExclude("_id");
 
-        GroupOperation groupOperation = group("item","price","alunosMatriculados");
+        GroupOperation groupOperation = group("item", "price", "alunosMatriculados");
 
         Aggregation aggregation = Aggregation.newAggregation(
                 lookupOperation,
@@ -105,5 +124,23 @@ public class AlunoService {
     }
 
 
+    @Bean
+    public Consumer<Map<String,String>> consumer() {
+        return message -> {
+            System.out.println("received " + message.toString());
+        };
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
