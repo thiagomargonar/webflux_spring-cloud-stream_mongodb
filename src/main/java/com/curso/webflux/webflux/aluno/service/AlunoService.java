@@ -2,6 +2,8 @@ package com.curso.webflux.webflux.aluno.service;
 
 import com.curso.webflux.webflux.aluno.domain.Aluno;
 import com.curso.webflux.webflux.aluno.repository.AlunoRepository;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Printed;
 import org.bson.Document;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -13,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.messaging.Message;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -49,9 +52,8 @@ public class AlunoService {
         return aluno
                 .doOnNext(aluno1 -> {
                     if(aluno1.getNome().equals("margonar")){
-                        Map<String,String> teste = new HashMap<>();
-                        teste.put("nome",aluno1.getNome());
-                        streamBridge.send("producer_thiago", teste);
+                            streamBridge.send("producer_aluno", aluno1);
+                        streamBridge.send("producer_aluno_log", "logou aluno");
                     }
                 })
                 .doOnError(throwable -> {
@@ -128,9 +130,17 @@ public class AlunoService {
 
 
     @Bean
-    public Consumer<Map<String,String>> consumer() {
+    public Consumer<Aluno> consumer() {
         return message -> {
-            System.out.println("received " + message.toString());
+            System.out.println("received " + message.toString()+" "+message.getNome());
+        };
+    }
+
+    @Bean
+    @Scheduled(fixedDelay = 1000)
+    public Consumer<String> consumerlog(){
+        return stringStringKStream -> {
+            System.out.println("received_Log " + stringStringKStream.toString());
         };
     }
 }
