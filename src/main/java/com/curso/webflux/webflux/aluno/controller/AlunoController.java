@@ -3,13 +3,11 @@ package com.curso.webflux.webflux.aluno.controller;
 import com.curso.webflux.webflux.aluno.domain.Aluno;
 import com.curso.webflux.webflux.aluno.service.AlunoService;
 import org.bson.Document;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/aluno")
@@ -57,7 +55,15 @@ public class AlunoController {
     }
 
     @PutMapping(path = "/{id}")
-    public void update(@PathVariable String id, @RequestBody String curso) {
-        alunoService.updateAluno(id, curso);
+    public Mono<Void> update(@PathVariable String id, @RequestBody String curso) {
+        return alunoService.updateCurso(id, curso);
+    }
+    @PutMapping(path = "/2/{id}")
+    public void update2(@PathVariable String id, @RequestBody String curso) {
+        alunoService.updateCurso1(id, curso);
+    }
+    @PutMapping(path = "/3/{id}")
+    public void updat3(@PathVariable String id, @RequestBody String curso) {
+        alunoService.updateCurso2(id, curso);
     }
 }
