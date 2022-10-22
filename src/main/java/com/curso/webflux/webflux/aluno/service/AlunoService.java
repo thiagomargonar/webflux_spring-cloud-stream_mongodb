@@ -52,7 +52,7 @@ public class AlunoService {
                     if (aluno1.getNome().equals("margonar")) {
                         //TODO Message Builder - set headers payload...
                         streamBridge.send("producer_aluno", aluno1);
-                        streamBridge.send("producer_aluno_log", "logou aluno");
+                        //streamBridge.send("producer_aluno_log", "logou aluno");
                     }
                 })
                 .doOnError(throwable -> {
