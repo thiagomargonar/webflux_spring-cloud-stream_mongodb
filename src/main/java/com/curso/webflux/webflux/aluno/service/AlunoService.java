@@ -11,15 +11,21 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
@@ -30,14 +36,18 @@ public class AlunoService {
     private final ReactiveMongoTemplate reactiveMongoTemplate;
     private final StreamBridge streamBridge;
 
-    private TesteProducerBean testeProducerBean;
+    private final Sinks.Many<Message<Aluno>>orchestratorReturnProcessor;
+
+    private final TesteProducerBean testeProducerBean;
 
     public AlunoService(AlunoRepository alunoRepository, ReactiveMongoTemplate reactiveMongoTemplate,
-                        StreamBridge streamBridge, TesteProducerBean testeProducerBean) {
+                        StreamBridge streamBridge, TesteProducerBean testeProducerBean,
+                        Sinks.Many<Message<Aluno>> orchestratorReturnProcessor) {
         this.alunoRepository = alunoRepository;
         this.reactiveMongoTemplate = reactiveMongoTemplate;
         this.streamBridge = streamBridge;
         this.testeProducerBean = testeProducerBean;
+        this.orchestratorReturnProcessor = orchestratorReturnProcessor;
     }
 
 
@@ -51,8 +61,14 @@ public class AlunoService {
                 .doOnNext(aluno1 -> {
                     if (aluno1.getNome().equals("margonar")) {
                         //TODO Message Builder - set headers payload...
-                        streamBridge.send("producer_aluno", aluno1);
+                        //streamBridge.send("producer_aluno", aluno1);
                         //streamBridge.send("producer_aluno_log", "logou aluno");
+                        Map<String,Object> stringStringMap = new HashMap<>();
+                        stringStringMap.put("teste","teste");
+                        MessageHeaders messageHeaders = new MessageHeaders(stringStringMap);
+
+
+                        orchestratorReturnProcessor.tryEmitNext(MessageBuilder.createMessage(aluno1,messageHeaders));
                     }
                 })
                 .doOnError(throwable -> {
@@ -70,7 +86,7 @@ public class AlunoService {
         return reactiveMongoTemplate.findAndModify(query, update, Aluno.class)
                 .delaySubscription(Duration.ofMillis(15000))
                 .doOnSuccess(aluno -> System.out.println("terminou update -  iniciando envio de mensagem"))
-                .doOnNext(aluno -> testeProducerBean.supplier())
+                //.doOnNext(aluno -> testeProducerBean.supplier())
                 .then();
     }
 

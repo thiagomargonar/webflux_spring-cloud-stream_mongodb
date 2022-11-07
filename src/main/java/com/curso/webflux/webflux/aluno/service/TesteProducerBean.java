@@ -1,12 +1,14 @@
 package com.curso.webflux.webflux.aluno.service;
 
 
+import com.curso.webflux.webflux.aluno.domain.Aluno;
 import org.springframework.cloud.function.context.PollableBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -30,11 +32,11 @@ public class TesteProducerBean {
 //        };
 //    }
 
-    @PollableBean
-    public Supplier<Flux<Message<String>>> supplier() {
-        return () -> Flux.just(MessageBuilder.withPayload("ola").setHeader("teste","teste").build(),
-                MessageBuilder.withPayload("adeus").setHeader("teste2","teste2").build());
-    }
+//    @PollableBean
+//    public Supplier<Flux<Message<String>>> supplier() {
+//        return () -> Flux.just(MessageBuilder.withPayload("ola").setHeader("teste","teste").build(),
+//                MessageBuilder.withPayload("adeus").setHeader("teste2","teste2").build());
+//    }
 
     @Bean
     public Function<Flux<Message<String>>, Flux<Message<String>>> uppercase() {
@@ -50,5 +52,18 @@ public class TesteProducerBean {
                 System.out.println(stringMessage);
             });
         };
+    }
+
+    //TODO o bean sendMessageOrquestratorReturn e orchestratorReturnProcessor andan juntos para enviar msg assincronas...
+    @Bean
+    public Sinks.Many<Message<Aluno>> sendMessageOrquestratorReturn() {
+        return Sinks.many().unicast().onBackpressureBuffer();
+    }
+
+    @Bean
+    public Supplier<Flux<Message<Aluno>>> orchestratorReturnProcessor(Sinks.Many<Message<Aluno>> dto) {
+        return () -> dto.asFlux()
+                .doOnNext(System.out::println)
+                .doOnError(System.out::println);
     }
 }
