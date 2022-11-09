@@ -146,24 +146,20 @@ public class AlunoService {
 
     public Mono<List<Document>> lookupOperation() {
 
-
         LookupOperation lookupOperation = LookupOperation.newLookup()
                 .from("aluno")
                 .localField("item")
                 .foreignField("curso.nome")
                 .as("alunosMatriculados");
 
-        ProjectionOperation operation = new ProjectionOperation()
-                .andExclude("_id");
-
-        GroupOperation groupOperation = group("item", "price", "alunosMatriculados");
+        ProjectionOperation operation = Aggregation.project("item", "nome", "valor").andExclude("_id");
 
         Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("nome").is("henrique").and("valor").gte(8)),
                 lookupOperation,
-                operation,
-                groupOperation);
+                operation);
 
-        return reactiveMongoTemplate.aggregate(aggregation, "modulos", Document.class).collectList();
+        return reactiveMongoTemplate.aggregate(aggregation, "aluno", Document.class).collectList();
     }
 
 

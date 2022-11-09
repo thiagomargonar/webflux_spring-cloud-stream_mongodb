@@ -41,12 +41,6 @@ public class TesteProducerBean {
     @Bean
     public Function<Flux<Message<String>>, Flux<Message<String>>> uppercase() {
         return message -> {
-            /*Acknowledgment acknowledgment = message.getHeaders().get(KafkaHeaders.ACKNOWLEDGMENT, Acknowledgment.class);
-            if (acknowledgment != null) {
-                System.out.println("Acknowledgment provided");
-                acknowledgment.acknowledge();
-            }*/
-
             System.out.println("received **> " + message);
             return message.doOnNext(stringMessage -> {
                 System.out.println(stringMessage);
